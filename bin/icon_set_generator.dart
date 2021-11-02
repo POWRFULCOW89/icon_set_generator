@@ -5,6 +5,8 @@ import 'package:args/args.dart' show ArgParser, ArgResults;
 void main(List<String> arguments) async {
   ArgParser parser = ArgParser();
 
+  parser.addOption('extension',
+      abbr: 'e', help: 'Extension to convert the set to.');
   parser.addFlag('windows10',
       abbr: 'w',
       help: 'Generate icon sets for Windows 10 apps.',
@@ -15,7 +17,7 @@ void main(List<String> arguments) async {
       abbr: 'a', help: 'Generate icon sets for Apple apps.', negatable: false);
 
   void printUsage([String? message]) {
-    print(message);
+    print("info: $message");
     print(parser.usage);
   }
 
@@ -30,14 +32,15 @@ void main(List<String> arguments) async {
   } else if (args.rest.isEmpty) {
     printUsage('No arguments provided.');
   } else {
-    String path = './test/js.png';
+    // String path = './test/js.png';
+    String path = args.rest.first;
 
     int iconCount = await icon_set_generator.generateIconSet(path);
 
     if (iconCount > 1) {
-      print('Successfully renamed $iconCount files.');
+      print('info: Successfully produced $iconCount icons.');
     } else {
-      print('No files renamed.');
+      print('info: No icons produced.');
     }
   }
 }

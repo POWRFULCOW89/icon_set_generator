@@ -43,22 +43,79 @@ final apple = [
   192,
 ];
 
-Future<int> generateIconSet(String path) async {
+// enum Format { png, ico, jpg, gif, jpeg, tga }
+
+Function? getEncoder(String format) {
+  switch (format) {
+    case 'png':
+      return encodePng;
+    case 'ico':
+      return encodeIco;
+    case 'jpg':
+    case 'jpeg':
+      return encodeJpg;
+    case 'gif':
+      return encodeGif;
+    case 'tga':
+      return encodeTga;
+  }
+}
+
+Function? getDecoder(List<int> bytes, String name) {
+  final decoder = getDecoderForNamedImage(name);
+  if (decoder == null) {
+    return null;
+  }
+  // return decoder.decodeImage(bytes);
+  return decoder.decodeImage;
+}
+
+Future<int> generateIconSet(String path, {String? ext}) async {
   int count = 0;
-  Image image = decodePng(File(path).readAsBytesSync()) as Image;
+  File file = File(path);
+  List<String> filename = file.uri.pathSegments.last.split('.');
+  String name = filename[0];
+  String fileExt = ext ?? filename[1];
 
-  if (!await Directory('out').exists()) {
-    Directory dir = Directory('out');
-    dir.createSync();
+  // Image image = decodePng(file.readAsBytesSync()) as Image;
+
+  Function? imageDecoder =
+      getDecoder(file.readAsBytesSync(), filename.join('.'));
+
+  Function? encodeImage = getEncoder(fileExt);
+
+  if (imageDecoder == null) {
+    print('No available decoder.');
+    return -1;
   }
 
-  for (var size in standard) {
-    Image resized = copyResize(image, width: size);
-    File(
-      'out/standard-$size.png',
-    ).writeAsBytesSync(encodePng(resized));
-    count++;
-  }
+  // ignore: unnecessary_null_comparison
+  else if (encodeImage == null) {
+    print('No available encoder.');
+    return -1;
+  } else {
+    Image image;
 
-  return count;
+    try {
+      image = imageDecoder(file.readAsBytesSync());
+    } catch (e) {
+      print("error: Corrupt or incomplete image.");
+      return -1;
+    }
+
+    if (!await Directory('out').exists()) {
+      Directory dir = Directory('out');
+      dir.createSync();
+    }
+
+    for (var size in standard) {
+      Image resized = copyResize(image, width: size);
+      File(
+        'out/$name-$size.$fileExt',
+      ).writeAsBytesSync(encodeImage(resized));
+      count++;
+    }
+
+    return count;
+  }
 }
