@@ -1,3 +1,5 @@
+library icon_set_generator;
+
 import 'package:image/image.dart';
 import 'dart:io';
 
@@ -7,7 +9,7 @@ import 'dart:io';
 /// https://blog.hubspot.com/website/what-is-a-favicon
 ///
 
-final standard = [
+final standardSet = [
   16, // Standard browser.
   32, // Taskbar shorcuts
   48,
@@ -43,8 +45,6 @@ final apple = [
   192,
 ];
 
-// enum Format { png, ico, jpg, gif, jpeg, tga }
-
 Function? getEncoder(String format) {
   switch (format) {
     case 'png':
@@ -70,9 +70,17 @@ Function? getDecoder(List<int> bytes, String name) {
   return decoder.decodeImage;
 }
 
-Future<int> generateIconSet(String path, {String? ext}) async {
+Future<int> generateIconSet(String path, List<int> iconSets,
+    {String? ext}) async {
   int count = 0;
-  File file = File(path);
+  File file;
+
+  try {
+    file = File(path);
+  } catch (e) {
+    return -1;
+  }
+
   List<String> filename = file.uri.pathSegments.last.split('.');
   String name = filename[0];
   String fileExt = ext ?? filename[1];
@@ -108,7 +116,14 @@ Future<int> generateIconSet(String path, {String? ext}) async {
       dir.createSync();
     }
 
-    for (var size in standard) {
+    if (fileExt.toLowerCase() == 'ico' || fileExt.toLowerCase() == 'cur') {
+      iconSets.sort();
+
+      // Remove all values of iconSets above 256
+      iconSets.removeWhere((element) => element > 256);
+    }
+
+    for (var size in iconSets) {
       Image resized = copyResize(image, width: size);
       File(
         'out/$name-$size.$fileExt',
