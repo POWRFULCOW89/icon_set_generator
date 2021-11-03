@@ -7,20 +7,29 @@ void main(List<String> arguments) async {
   ArgParser parser = ArgParser();
 
   parser.addOption('extension',
-      abbr: 'e', help: 'Extension to convert the set to.');
-  parser.addOption('output', abbr: 'o', help: 'Output directory.');
-  parser.addOption('set', abbr: 's', help: 'Custom set of sizes');
+      abbr: 'e', help: 'option: Extension to convert the set to.');
+  parser.addOption('output', abbr: 'o', help: 'option: Output directory.');
+  parser.addOption('set', abbr: 's', help: 'option: Custom set of sizes');
+
+  parser.addFlag('apple',
+      abbr: 'a',
+      help: 'flag: Generate icon sets for Apple apps.',
+      negatable: false);
   parser.addFlag('windows10',
       abbr: 'w',
-      help: 'Generate icon sets for Windows 10 apps.',
+      help: 'flag: Generate icon sets for Windows 10 apps.',
       negatable: false);
   parser.addFlag('help',
-      abbr: 'h', help: 'Shows the CLI usage.', negatable: false);
-  parser.addFlag('apple',
-      abbr: 'a', help: 'Generate icon sets for Apple apps.', negatable: false);
+      abbr: 'h', help: 'flag: Shows the CLI usage.', negatable: false);
 
   void printUsage([String? message]) {
-    print("info: $message");
+    if (message != null) {
+      print("info: $message");
+    }
+    print("""
+
+Usage: icon_set_generator image.extension [-e] [-o] [-s] [-a] [-w] [-h]
+    """);
     print(parser.usage);
   }
 
@@ -28,6 +37,7 @@ void main(List<String> arguments) async {
 
   if (args['help']) {
     printUsage();
+    return;
   }
 
   if (args.rest.length > 1) {

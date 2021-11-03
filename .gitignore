@@ -5,3 +5,7 @@
 # Conventional directory for build output.
 build/
 .vscode
+test/*.png
+test/*.jpg
+test/*.gif
+test/*.ico
