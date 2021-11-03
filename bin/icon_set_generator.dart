@@ -1,6 +1,7 @@
 import 'package:icon_set_generator/icon_set_generator.dart';
 // as icon_set_generator;
 import 'package:args/args.dart' show ArgParser, ArgResults;
+import 'dart:convert';
 
 void main(List<String> arguments) async {
   ArgParser parser = ArgParser();
@@ -36,10 +37,12 @@ void main(List<String> arguments) async {
   } else {
     String path = args.rest.first; // takes a single positional argument
 
-    List<int> sets = [];
-    String ext = args['extension'];
+    // Use a custom set of sizes if provided, else the standard set
+    List<dynamic> sets = args['set'] != null
+        ? jsonDecode(args['set']) as List<dynamic>
+        : standardSet;
 
-    sets.addAll(standardSet);
+    String? ext = args['extension'];
 
     if (args['windows10']) {
       sets.addAll(w10);

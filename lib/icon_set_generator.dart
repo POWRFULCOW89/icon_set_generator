@@ -72,6 +72,8 @@ Function? getDecoder(String name) {
   return decoder.decodeImage;
 }
 
+/// Remove numbers greater than 256 from a flat or nested list when
+/// handling the ICO format.
 void normalizeSet(List arr) {
   if (arr[0] is List) {
     for (var size in arr) {
@@ -82,7 +84,8 @@ void normalizeSet(List arr) {
   }
 }
 
-/// Returns the number of icons produced in the [out] dir given an image [path].
+/// Returns the number of icons produced in the [out] dir given an image [path],
+/// or -1 in case of error.
 ///
 /// - Additional icons can be produced by supplying a larger array.
 /// - The icons produced can be converted to a specified [extension].
@@ -109,7 +112,14 @@ Future<int> generateIconSet(String path, List sets,
   // Getting file data.
   List<String> filename = file.uri.pathSegments.last.split('.');
   String name = filename[0];
-  String fileExt = (extension ?? filename[1]).toLowerCase();
+  String fileExt;
+
+  try {
+    fileExt = (extension ?? filename[1]).toLowerCase();
+  } catch (e) {
+    print("error: Invalid file: ${filename.join('.')}");
+    return -1;
+  }
 
   Function? imageDecoder = getDecoder(filename.join('.'));
   Function? encodeImage = getEncoder(fileExt);

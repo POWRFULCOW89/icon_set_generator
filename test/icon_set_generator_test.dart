@@ -3,23 +3,8 @@ import 'package:test/test.dart';
 import 'dart:io';
 
 void main() {
-  // Directory dir = Directory.current
-  //     .createTempSync('test' + Platform.pathSeparator + 'test_rename');
-
+  // Dir to perform tests on
   Directory dir = Directory('./out');
-
-  // setUpAll(() {
-  //   for (var i = 0; i < 5; i++) {
-  //     var file = File(dir.path + '/test_rename_$i.txt');
-  //     file.createSync();
-
-  //     if (i % 2 == 0) {
-  //       final subdir = dir.createTempSync('test_rename_subdir');
-  //       var file = File(subdir.path + '/test_rename_subdir$i.txt');
-  //       file.createSync();
-  //     }
-  //   }
-  // });
 
   setUp(() {
     dir.createSync();
@@ -71,12 +56,6 @@ void main() {
     });
 
     test('Correctly outputs a custom set from PNG in a subfolder', () async {
-      // const customSet = [
-      //   [100, 200],
-      //   [40, 60],
-      //   [1, 100]
-      // ];
-
       const customSet = [100, 40, 1];
 
       int n = await generateIconSet("./test/js.png", customSet, out: './sub');
