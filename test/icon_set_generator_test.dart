@@ -48,109 +48,75 @@ void main() {
       int n = await generateIconSet(
           "./test/js.ico", [...standardSet, ...w10, ...apple]);
       List<int> all = [...standardSet, ...w10, ...apple];
-      all.removeWhere((element) => element > 256);
+      // all.removeWhere((element) => element > 256);
+      normalizeSet(all);
 
       expect(n, equals(all.length));
       expect(dir.listSync().length, equals(all.toSet().length));
     });
 
-    // test('Correctly strips no substrings.', () async {
-    //   int n = await rename(dir.path, 'thisdoesnotexist', '', false, false);
-    //   expect(n, equals(0));
-    // });
+    test('Correctly outputs a standard set from PNG to ICO', () async {
+      int n =
+          await generateIconSet("./test/js.png", standardSet, extension: 'ico');
+      List<int> all = [...standardSet];
+      normalizeSet(all);
 
-    // test('Correctly strips substrings recursively.', () async {
-    //   int n = await rename(dir.path, 'test_', '', true, false);
-    //   expect(n, equals(8));
-    //   dir.listSync(recursive: true).forEach((f) {
-    //     expect(f.uri.pathSegments.last.contains('test_'), isFalse);
-    //   });
-    // });
+      expect(n, equals(all.length));
+      expect(dir.listSync().length, equals(all.toSet().length));
 
-    // test('Correctly strips no substrings recursively.', () async {
-    //   int n = await rename(dir.path, 'thisdoesnotexist', '', true, false);
-    //   expect(n, equals(0));
-    // });
+      // Check if all files in dir have the ico extension
+      for (var file in dir.listSync()) {
+        expect(file.path.endsWith('.ico'), isTrue);
+      }
+    });
 
-    // test('Correctly replaces substrings with a new string', () async {
-    //   int n = await rename(dir.path, 're_', 'RecordNumber', false, false);
-    //   expect(n, equals(5));
-    //   dir.listSync().forEach((f) {
-    //     expect(f.uri.pathSegments.last.contains('re_'), isFalse);
-    //   });
-    // });
+    test('Correctly outputs a custom set from PNG in a subfolder', () async {
+      // const customSet = [
+      //   [100, 200],
+      //   [40, 60],
+      //   [1, 100]
+      // ];
 
-    // test('Correctly replaces substrings with a new string recursively',
-    //     () async {
-    //   int n = await rename(
-    //       dir.path, 'rename_subdir', 'SubArchive No.', true, false);
-    //   expect(n, equals(3));
-    //   dir.listSync(recursive: true).forEach((f) {
-    //     expect(f.uri.pathSegments.last.contains('rename_subdir'), isFalse);
-    //   });
-    // });
+      const customSet = [100, 40, 1];
 
-    // test('Correctly replaces substrings with a new string numbered recursively',
-    //     () async {
-    //   int n = await rename(dir.path, 'SubArchive No.', 'File', true, true);
-    //   // expect(n, equals(3));
+      int n = await generateIconSet("./test/js.png", customSet, out: './sub');
+      expect(n, equals(customSet.length));
+      Directory subdir = Directory('./sub');
+      expect(subdir.listSync().length, equals(customSet.length));
+      subdir.deleteSync(recursive: true);
+    });
 
-    //   final files = dir.listSync(recursive: true);
-    //   int count = 0;
-    //   files.asMap().forEach((i, f) {
-    //     String name = f.uri.pathSegments.last;
-    //     if (name.startsWith('File')) count++;
-    //   });
-    //   expect(count, equals(n));
-    // });
+    test('Correctly outputs a custom set of sizes from PNG ', () async {
+      const customSet = [
+        [100, 200],
+        [40, 60],
+        [1, 100]
+      ];
 
-    // test('Correctly strips substrings with RegEx', () async {
-    //   int n = await rename(dir.path, '[re]', '', false, false);
-    //   expect(n, equals(5));
+      int n = await generateIconSet("./test/js.png", customSet);
+      expect(n, equals(customSet.length));
+      expect(dir.listSync().length, equals(customSet.length));
+    });
 
-    //   dir.listSync().forEach((f) {
-    //     String name = f.uri.pathSegments.last;
+    test('Outputs nothing from an empty set from PNG', () async {
+      const customSet = [];
 
-    //     if (name.endsWith('.txt')) {
-    //       expect(f.uri.pathSegments.last.startsWith('RcodNumb'), isTrue);
-    //     }
-    //   });
-    // });
+      int n = await generateIconSet("./test/js.png", customSet);
+      expect(n, equals(0));
+      expect(dir.listSync().length, equals(0));
+    });
 
-    // test('Correctly replaces substrings with RegEx recursively', () async {
-    //   int n = await rename(dir.path, 'F...', 'Entry[123]', true, false);
-    //   expect(n, equals(3));
+    test('Fails to output a standard set from PNG', () async {
+      int n = await generateIconSet("./test/image.png", standardSet);
+      expect(n, equals(-1));
+      expect(dir.listSync().length, equals(0));
+    });
 
-    //   final files = dir.listSync(recursive: true);
-    //   int count = 0;
-    //   files.asMap().forEach((i, f) {
-    //     String name = f.uri.pathSegments.last;
-    //     if (name.startsWith('Entry')) count++;
-    //   });
-    //   expect(count, equals(n));
-    // });
-
-    // test('Correctly strips substrings with RegEx numbered recursively',
-    //     () async {
-    //   int n = await rename(dir.path, '\\[(.*?)\\]\\d*', '', true, true);
-    //   expect(n, equals(3));
-
-    //   final files = dir.listSync(recursive: true);
-    //   int count = 0;
-    //   files.asMap().forEach((i, f) {
-    //     String name = f.uri.pathSegments.last;
-    //     if (name.startsWith('Entry')) count++;
-    //   });
-    //   expect(count, equals(n));
-    // });
-
-    // test('Correctly change file extension.', () async {
-    //   int n = await rename(dir.path, 'txt', 'csv', false, false);
-    //   expect(n, equals(5));
-    //   dir.listSync().forEach((f) {
-    //     expect(f.uri.pathSegments.last.contains('txt'), isFalse);
-    //   });
-    // });
+    test('Fails to output a standard set from an unknown format', () async {
+      int n = await generateIconSet("./test/image.pc89", standardSet);
+      expect(n, equals(-1));
+      expect(dir.listSync().length, equals(0));
+    });
   });
 
   tearDown(() {

@@ -7,6 +7,8 @@ void main(List<String> arguments) async {
 
   parser.addOption('extension',
       abbr: 'e', help: 'Extension to convert the set to.');
+  parser.addOption('output', abbr: 'o', help: 'Output directory.');
+  parser.addOption('set', abbr: 's', help: 'Custom set of sizes');
   parser.addFlag('windows10',
       abbr: 'w',
       help: 'Generate icon sets for Windows 10 apps.',
@@ -32,9 +34,10 @@ void main(List<String> arguments) async {
   } else if (args.rest.isEmpty) {
     printUsage('No arguments provided.');
   } else {
-    String path = args.rest.first;
+    String path = args.rest.first; // takes a single positional argument
 
     List<int> sets = [];
+    String ext = args['extension'];
 
     sets.addAll(standardSet);
 
@@ -44,9 +47,9 @@ void main(List<String> arguments) async {
       sets.addAll(apple);
     }
 
-    int iconCount = await generateIconSet(path, sets);
+    int iconCount = await generateIconSet(path, sets, extension: ext);
 
-    if (iconCount > 1) {
+    if (iconCount >= 1) {
       print('info: Successfully produced $iconCount icons.');
     } else {
       print('info: No icons produced.');
