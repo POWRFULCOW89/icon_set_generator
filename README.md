@@ -24,9 +24,10 @@ Simple CLI tool to enable easy production of icon sets for your next application
     dart pub add icon_set_generator
     ```    
 
+    Refer to the [API docs](https://pub.dev/documentation/icon_set_generator/latest/icon_set_generator/generateIconSet.html) for library use.
+
 3. Grab a prebuilt [binary](https://github.com/POWRFULCOW89/icon_set_generator/releases).
 
-    Refer to the [API docs](https://pub.dev/documentation/icon_set_generator/latest/icon_set_generator/generateIconSet.html) for library use.
 
 ## Usage
 
