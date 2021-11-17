@@ -10,23 +10,23 @@ Simple CLI tool to enable easy production of icon sets for your next application
     gh repo clone POWRFULCOW89/icon_set_generator
     ```
 
-    or
-
-2. Get the pub package:
-
-    ``` batch
-    dart pub add icon_set_generator
-    ```
-
-    and build from source:
+    or build from source:
 
     ```batch
     dart compile exe .\bin\icon_set_generator.dart
     ```
-
+    
     or
 
+2. [Get the pub package](https://pub.dev/packages/icon_set_generator/install):
+
+    ``` batch
+    dart pub add icon_set_generator
+    ```    
+
 3. Grab a prebuilt [binary](https://github.com/POWRFULCOW89/icon_set_generator/releases).
+
+    Refer to the [API docs](https://pub.dev/documentation/icon_set_generator/latest/icon_set_generator/generateIconSet.html) for library use.
 
 ## Usage
 
